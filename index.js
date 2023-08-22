@@ -53,14 +53,19 @@ async function run() {
                     $set: {quantity: data.quantity},
                 };
             }
+            if (data.image) {
+                updateDoc = {
+                    $set: { image: data.image },
+                };
+            }
            
            
             const final = await locationCollection.updateOne(id, updateDoc, option)
             res.send(final)
         })
 
-        app.get('/location/:email', async (req, res) => {
-            const query = { senderEmail : req.params.email }
+        app.get('/location/:id', async (req, res) => {
+            const query = { id : req.params.id }
             const data = await locationCollection.findOne(query)
             res.send(data)
         })
