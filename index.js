@@ -24,6 +24,7 @@ const client = new MongoClient(uri, {
 const locationCollection = client.db('task').collection('location')
 const districCollection = client.db('task').collection('districAndKm')
 const orderHisCollection = client.db('task').collection('history')
+const userCollection = client.db('task').collection('user')
 
 async function run() {
     try {
@@ -79,8 +80,7 @@ async function run() {
                     $set: { floor: data.floor },
                 };
             }
-           
-           
+            
             const final = await locationCollection.updateOne(id, updateDoc, option)
             res.send(final)
         })
@@ -90,7 +90,6 @@ async function run() {
             const data = await locationCollection.findOne(query)
             res.send(data)
         })
-
 
 
         app.post("/create-payment-intent", async (req, res) => {
@@ -111,14 +110,25 @@ async function run() {
 
 
 
-        app.post("/summery", async (req, res) => {
-            const data = req.body;
-
-            //const updatedClass = await panndingCollaction.updateOne(classId, updateDoc, options);
-            const result = await orderHisCollection.insertOne(data);
-            //const deleted = await classSelectCollaction.deleteOne(id);
-            res.send(result);
+        app.post("/summery/:id", async (req, res) => {
+            const data = req.body; 
+           const id = {_id : new ObjectId(req.params.id)}
+             const result = await orderHisCollection.insertOne(data);
+             const deleted = await locationCollection.deleteOne(id);
+            res.send({result,deleted});
         });
+
+        app.get('/summery', async (req, res) => {
+            const query = { email: req.query.email }
+            const data = await orderHisCollection.find(query).toArray()
+            res.send(data)
+        })
+
+
+        app.post('/user', async (req, res) => {
+            const data = await userCollection.insertOne(req.body)
+            res.send(data)
+        })
     }
     finally {
 
