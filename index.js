@@ -28,7 +28,7 @@ const userCollection = client.db('task').collection('user')
 
 async function run() {
     try {
-        await client.connect();
+        //await client.connect();
 
         app.get('/distric', async (req, res) => {
             const data = await districCollection.find().toArray()
